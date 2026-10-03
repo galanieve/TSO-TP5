@@ -4,9 +4,6 @@ Teoría de Sistemas Operativos (TSO) - Ciclo Lectivo 2026
 Cátedra: Ing. María Fernanda Vázquez - JTP: Ing. Fabio D. Argañaraz
 
 Ejercicio Práctico N° 3: La Cena de los Filósofos (Prevención de Deadlock)
-Bibliografía de Referencia:
-- Silberschatz: Cap. 6.6 (Problemas clásicos de sincronización)
-- Stallings: Cap. 5.6 (Problema de los filósofos comensales)
 """
 
 import threading
@@ -14,10 +11,7 @@ import time
 import random
 
 NUM_FILOSOFOS = 5
-# Cada tenedor está representado por un Lock (exclusión mutua)
 tenedores = [threading.Lock() for _ in range(NUM_FILOSOFOS)]
-
-# Variable para contar cuántas veces comió cada filósofo
 comidas = [0] * NUM_FILOSOFOS
 lock_print = threading.Lock()
 
@@ -27,51 +21,32 @@ def log(msg):
 
 def pensar(id):
     log(f"🤔 Filósofo {id} está pensando...")
-    time.sleep(random.uniform(0.1, 0.3))
+    time.sleep(random.uniform(0.05, 0.15))
 
 def comer(id):
     log(f"🍝 Filósofo {id} está comiendo espagueti...")
     comidas[id] += 1
-    time.sleep(random.uniform(0.1, 0.3))
+    time.sleep(random.uniform(0.05, 0.15))
     log(f"✨ Filósofo {id} terminó de comer (total comidas: {comidas[id]}).")
 
 def filosofo(id, rondas=3):
-    """
-    Representa el ciclo de vida de un filósofo: pensar -> tomar tenedores -> comer -> soltar tenedores.
-    
-    CONSIGNA:
-    Si todos los filósofos toman primero su tenedor izquierdo y luego el derecho:
-        izq = id
-        der = (id + 1) % NUM_FILOSOFOS
-    se produce un DEADLOCK (interbloqueo) si todos toman su tenedor izquierdo simultáneamente.
-    
-    TODO PARA EL ESTUDIANTE:
-    Implementa una solución para prevenir el Deadlock rompiendo una de las condiciones de Coffman
-    (por ejemplo, la 'Espera Circular' usando una estrategia asimétrica):
-    - Si el filósofo es el último (id == NUM_FILOSOFOS - 1) o es impar, que tome primero el tenedor
-      DERECHO y luego el IZQUIERDO.
-    - Los demás filósofos toman primero el IZQUIERDO y luego el DERECHO.
-    - Alternativamente, puedes usar un semáforo contador (árbitro/mozo) que permita un máximo de 4 comensales.
-    """
     for _ in range(rondas):
         pensar(id)
         
-        # Identificadores de los tenedores adyacentes
         tenedor_izq = id
         tenedor_der = (id + 1) % NUM_FILOSOFOS
         
-        # =========================================================================
-        # INICIO TODO: Implementar adquisición y liberación segura de tenedores
-        # =========================================================================
-        # PISTA: Implementa la solución asimétrica de Dijkstra (romper Espera Circular)
-        # o utiliza un semáforo árbitro para evitar el interbloqueo (Deadlock).
-        #
-        # TODO: Adquiere los tenedores adyacentes de forma segura, invoca comer(id)
-        # y libera los tenedores:
-        pass
-        # =========================================================================
-        # FIN TODO
-        # =========================================================================
+        # Estrategia Asimétrica de Dijkstra (Prevención de Deadlock)
+        if id == NUM_FILOSOFOS - 1:
+            primer_tenedor = tenedores[tenedor_der]
+            segundo_tenedor = tenedores[tenedor_izq]
+        else:
+            primer_tenedor = tenedores[tenedor_izq]
+            segundo_tenedor = tenedores[tenedor_der]
+            
+        with primer_tenedor:
+            with segundo_tenedor:
+                comer(id)
 
 if __name__ == "__main__":
     print("=" * 60)
@@ -93,3 +68,4 @@ if __name__ == "__main__":
         print(f" - Filósofo {i}: {c} veces comió.")
     print(" ¡Simulación completada sin Interbloqueo (Deadlock)!")
     print("=" * 60)
+    
