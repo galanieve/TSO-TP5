@@ -18,7 +18,7 @@
 
 Para resolver los ejercicios interactivos, deberás basarte en la teoría vista en clase y la siguiente bibliografía oficial:
 
-| Tema | Libro de Referencia | Capítulo |
+| Tema | Libro de Referencia | Capítulo|
 | :--- | :--- | :--- |
 | **Sección Crítica y Hardware** | Silberschatz, *Fundamentos de SO* (7ma Ed.) | Cap. 6.2 y 6.3 |
 | **Semáforos y Monitores** | Silberschatz, *Fundamentos de SO* (7ma Ed.) | Cap. 6.6 y 6.7 |
